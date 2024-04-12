@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using practice_api.Data;
+using practice_api.Mappers;
+using practice_api.Dtos.Stock;
 
 namespace practice_api.Controllers
 {
@@ -16,7 +18,8 @@ namespace practice_api.Controllers
         [HttpGet] 
         public IActionResult GetAll()
         {
-            var stocks = _context.Stock.ToList();
+            var stocks = _context.Stock.ToList()
+            .Select(s => s.ToStockDto());
             return Ok(stocks);
         }
 
@@ -29,7 +32,7 @@ namespace practice_api.Controllers
                 {
                     return NotFound();
                 }
-            return Ok(stock);
+            return Ok(stock.ToStockDto());
             
         }
     }
