@@ -1,5 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using practice_api.Data;
 
-namespace practice_api
+    namespace practice_api
 {
     public class Program
     {
@@ -14,6 +16,11 @@ namespace practice_api
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddDbContext<ApplicationDBContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -26,7 +33,6 @@ namespace practice_api
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 
