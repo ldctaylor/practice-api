@@ -2,7 +2,7 @@
 {
     public class Comment
     {
-        public int? StockID { get; set; }
+        public int? StockId { get; set; }
 
         public Stock? Stock { get; set; }
 

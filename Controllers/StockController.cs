@@ -10,12 +10,12 @@ namespace practice_api.Controllers
     public class StockController : ControllerBase
     {
         private readonly ApplicationDBContext _context;
-        public StockController(ApplicationDBContext applicationDBContext)
+        public StockController(ApplicationDBContext context)
         {
-            _context = applicationDBContext;
+            _context = context;
         }
 
-        [HttpGet] 
+        [HttpGet]
         public IActionResult GetAll()
         {
             var stocks = _context.Stock.ToList()
@@ -28,12 +28,53 @@ namespace practice_api.Controllers
         {
             var stock = _context.Stock.Find(id);
 
-            if(stock == null)
-                {
-                    return NotFound();
-                }
+            if (stock == null)
+            {
+                return NotFound();
+            }
             return Ok(stock.ToStockDto());
-            
+
+        }
+
+        [HttpPost]
+        public IActionResult Create([FromBody] CreateStockRequestDto stockDto)
+        {
+            var stockModel = stockDto.ToStockFromCreateDTO();
+            _context.Stock.Add(stockModel);
+            _context.SaveChanges();
+            return CreatedAtAction(nameof(GetById), new { id = stockModel.Id }, stockModel.ToStockDto());
+        }
+
+        [HttpPut]
+        [Route("{id}")]
+        public IActionResult Update([FromRoute] int id, [FromBody] UpdateStockRequestDto updateDto)
+        {
+            var stockModel = _context.Stock.FirstOrDefault(x => x.Id == id);
+
+            if (stockModel == null)
+            { return NotFound(); }
+
+            stockModel.Symbol = updateDto.Symbol;
+            stockModel.CompanyName = updateDto.CompanyName;
+            stockModel.Purchase = updateDto.Purchase;
+            stockModel.LastDiv = updateDto.LastDiv;
+            stockModel.MarketCap = updateDto.MarketCap;
+            stockModel.Industry = updateDto.Industry;
+            _context.SaveChanges();
+            return Ok(stockModel.ToStockDto());
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public IActionResult Delete([FromRoute] int id)
+        {
+            var stockModel = _context.Stock.FirstOrDefault(x => x.Id == id);
+             if(stockModel == null)
+            { return NotFound(); }
+
+             _context.Stock.Remove(stockModel);
+            _context.SaveChanges();
+            return NoContent();
         }
     }
 }
